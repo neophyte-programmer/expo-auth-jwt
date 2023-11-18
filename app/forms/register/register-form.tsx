@@ -20,28 +20,36 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { TextInput } from "../../components/hierarchy/custom-text-input"
-import { LoginFormSchema, loginFormSchema } from './schema';
+import {  registerFormSchema, RegisterFormSchema } from './schema';
 import { getReadableValidationErrorMessage } from '../../utils/functions';
 import { useAuth } from '../../context/auth-context';
 
-const LoginForm: React.FC = () => {
+const RegisterForm: React.FC = () => {
 
     const { onLogin, onRegister } = useAuth()
 
-    const methods = useForm<LoginFormSchema>({
-        resolver: zodResolver(loginFormSchema),
+    const methods = useForm<RegisterFormSchema>({
+        resolver: zodResolver(registerFormSchema),
         mode: 'onBlur',
     });
 
-    const onSubmit: SubmitHandler<LoginFormSchema> = async ({ email, password }) => {
-        // console.log(JSON.stringify(data));
+    const login = async (email: string, password: string) => {
         const result = await onLogin!(email, password)
         if (result && result.error) {
             Alert.alert("Something went wrong", result.msg)
+        } 
+    }
+    const onSubmit: SubmitHandler<RegisterFormSchema> = async ({ email, password }) => {
+        // console.log(JSON.stringify(data));
+        const result = await onRegister!(email, password)
+        if (result && result.error) {
+            Alert.alert("Something went wrong", result.msg)
+        } else {
+            login(email, password)
         }
     };
 
-    const onError: SubmitErrorHandler<LoginFormSchema> = (
+    const onError: SubmitErrorHandler<RegisterFormSchema> = (
         errors,
         e
     ) => {
@@ -144,4 +152,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default LoginForm
+export default RegisterForm
